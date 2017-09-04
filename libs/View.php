@@ -11,8 +11,17 @@ class View
         //
     }
 
-    public function render($name)
+    public function render($name, $include = true)
     {
-        require 'views/' .$name. '.php';
+        if ($include)
+        {
+            require 'views/header.php';
+            require 'views/' .$name. '.php';
+            require 'views/footer.php';
+        }
+        else
+        {
+            require 'views/' .$name. '.php';
+        }
     }
 }

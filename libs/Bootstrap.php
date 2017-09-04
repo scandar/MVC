@@ -20,6 +20,15 @@ class Bootstrap
      */
     private function requireController($url)
     {
+        //  load home controller if no controller specified
+        if (empty($url[0])) {
+            require 'controllers/homeController.php';
+            $home = new Home();
+            $home->index();
+            return false;
+        }
+
+        //  load controller if specified
         if (isset($url[0])) {
             $file = 'controllers/' .$url[0]. 'Controller.php';
             if (file_exists($file)) {
@@ -28,8 +37,7 @@ class Bootstrap
             }
 
             // if doesn't exists require error controller and return false
-            require 'controllers/errorController.php';
-            new Err();
+            $this->notFound();
             return false;
         }
     }
@@ -42,9 +50,20 @@ class Bootstrap
     {
         $controller = new $url[0];
         if (isset($url[1])) {
-            $arg = (isset($url[2])) ? $url[2] : null;
-            $controller->{$url[1]}($arg);
+            if (method_exists($controller, $url[1])) {
+                $arg = (isset($url[2])) ? $url[2] : null;
+                $controller->{$url[1]}($arg);
+                return true;
+            }
+            else
+            {
+                $this->notFound();
+                return false;
+            }
         }
+        //if no methods specified load the default
+        $controller->index();
+        return true;
     }
 
     /**
@@ -60,5 +79,13 @@ class Bootstrap
             $url = explode('/',$url);
             return $url;
         }
+        return $url = null;
+    }
+
+    public function notFound()
+    {
+        require 'controllers/errorController.php';
+        $err = new Err();
+        // $err->index();
     }
 }

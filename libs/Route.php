@@ -8,4 +8,8 @@ class Route
     {
         echo URL . $name;
     }
+    public static function link($name)
+    {
+        return URL . $name;
+    }
 }

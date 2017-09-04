@@ -5,9 +5,9 @@
  */
 class Model
 {
-
+    protected $db;
     function __construct()
     {
-        // should do database related stuff
+        $this->db = new Database();
     }
 }

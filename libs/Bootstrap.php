@@ -7,6 +7,7 @@ class Bootstrap
 {
     function __construct()
     {
+        Session::init();
         $url = $this->explodeURL();
 
         if ($this->requireController($url))
@@ -25,6 +26,7 @@ class Bootstrap
             require 'controllers/homeController.php';
             $home = new Home();
             $home->index();
+            $home->loadModel();
             return false;
         }
 
@@ -52,6 +54,7 @@ class Bootstrap
         if (isset($url[1])) {
             if (method_exists($controller, $url[1])) {
                 $arg = (isset($url[2])) ? $url[2] : null;
+                $controller->loadModel();
                 $controller->{$url[1]}($arg);
                 return true;
             }
@@ -62,6 +65,7 @@ class Bootstrap
             }
         }
         //if no methods specified load the default
+        $controller->loadModel();
         $controller->index();
         return true;
     }
@@ -86,6 +90,8 @@ class Bootstrap
     {
         require 'controllers/errorController.php';
         $err = new Err();
+        $err->loadModel();
+
         // $err->index();
     }
 }

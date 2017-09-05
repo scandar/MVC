@@ -14,6 +14,7 @@ class Dashboard extends Controller
         if (!$logged) {
             $this->logout();
         }
+        $this->view->scripts = ['dashboard/script'];
     }
 
     public function logout()
@@ -21,5 +22,20 @@ class Dashboard extends Controller
         Session::destroy();
         header('Location: '.Route::link('login'));
         exit();
+    }
+
+    public function ajaxInsert()
+    {
+        $this->model->ajaxInsert();
+    }
+
+    public function ajaxGet()
+    {
+        $this->model->ajaxGet();
+    }
+
+    public function ajaxDelete()
+    {
+        $this->model->ajaxDelete();
     }
 }

@@ -24,7 +24,8 @@ class Login_Model extends Model
         $sth->execute();
         $data = $sth->fetchObject();
         $count = $sth->rowCount();
-        // print_r($data->username);
+        // print_r($data);
+        // die();
 
         if ($count) {
             $this->login($data);
@@ -41,6 +42,7 @@ class Login_Model extends Model
         Session::set('logged_in',true);
         Session::set('user_id',$data->id);
         Session::set('username',$data->username);
+        Session::set('role',$data->role);
 
         header('Location: '.Route::link('dashboard'));
     }

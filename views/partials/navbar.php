@@ -15,9 +15,15 @@
         <li><a href="<?php Route::asset('home'); ?>">Home</a></li>
         <li><a href="<?php Route::asset('help'); ?>">Help</a></li>
 
-        <?php if (!Session::get('logged_in')) { ?>
+        <?php if (!Session::get('logged_in')): ?>
             <li><a href="<?php Route::asset('login'); ?>">Login</a></li>
-        <?php } else { ?>
+        <?php  else:  ?>
+            <li><a href="<?php Route::asset('dashboard'); ?>">Dashboard</a></li>
+
+            <?php if (Session::get('role') == 'owner'): ?>
+                <li><a href="<?php Route::asset('user'); ?>">Users</a></li>
+            <?php endif; ?>
+
             <li class="dropdown">
               <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><?php echo Session::get('username'); ?>  <span class="caret"></span></a>
               <ul class="dropdown-menu">
@@ -28,7 +34,7 @@
                 <li><a href="<?php Route::asset('dashboard/logout'); ?>">Logout</a></li>
               </ul>
             </li>
-        <?php } ?>
+        <?php endif; ?>
       </ul>
     </div><!-- /.navbar-collapse -->
   </div><!-- /.container-fluid -->

@@ -23,7 +23,7 @@ class User_Model extends Model
     public function create()
     {
         $username = $_POST['username'];
-        $password = md5($_POST['password']);
+        $password = Password::make($_POST['password']);
         $role = $_POST['role'];
 
         if (!count($this->fetchUsers($username))) {
@@ -52,7 +52,7 @@ class User_Model extends Model
         $users = $this->fetchUsers($id);
 
         $username = $_POST['username'];
-        $password = md5($_POST['password']);
+        $password = Password::make($_POST['password']);
         $role = $_POST['role'];
 
         if ($users[0]['role'] != 'owner') {

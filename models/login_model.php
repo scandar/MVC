@@ -13,21 +13,24 @@ class Login_Model extends Model
     public function run()
     {
         $username = $_POST['username'];
-        $password = md5($_POST['password']);
+        $password = $_POST['password'];
 
         $sth = $this->db
-             ->prepare("SELECT * FROM users WHERE username = ? AND password = ?");
+             ->prepare("SELECT * FROM users WHERE username = ?");
 
         $sth->bindParam(1, $username);
-        $sth->bindParam(2, $password);
+        // $sth->bindParam(2, $password);
 
         $sth->execute();
         $data = $sth->fetchObject();
         $count = $sth->rowCount();
+        if ($count) {
+            $verify = password_verify($password, $data->password);
+        }
         // print_r($data);
         // die();
 
-        if ($count) {
+        if ($verify) {
             $this->login($data);
         } else {
             Session::destroy();

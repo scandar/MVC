@@ -79,6 +79,7 @@ class Bootstrap
         if (isset($_GET['url'])) {
             // trim excess slashes
             $url = rtrim($_GET['url'], '/');
+            $url = filter_var($url, FILTER_SANITIZE_URL);
             // explode url to array
             $url = explode('/',$url);
             return $url;

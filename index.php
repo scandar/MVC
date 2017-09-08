@@ -1,19 +1,15 @@
 <?php
 
-require 'libs/Bootstrap.php';
-require 'libs/Controller.php';
-require 'libs/Model.php';
-require 'libs/View.php';
-require 'libs/Route.php';
-require 'libs/Database.php';
-require 'libs/Session.php';
-require 'libs/Password.php';
+include 'config/Constants.php';
 
-require 'config/paths.php';
-require 'config/database.php';
+spl_autoload_register(function ($class)
+{
+    include "libs/$class.php";
+});
 
 $app = new Bootstrap();
 
-
+// $db = new Database();
+// $db->query('select','users',['id'=>1]);
 
 // $2y$10$J4TzstNzsGp1LgWzvuQhju1GzMtu501GJoqb4fMU.tTOkAhVlgMwS

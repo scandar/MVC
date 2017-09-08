@@ -5,19 +5,22 @@
  */
 class User_Model extends Model
 {
-    public function fetchUsers($username = NULL)
+    public function fetchUsers($key = NULL)
     {
-        if ($username && !is_numeric($username)) {
-            $sth = $this->db->prepare("SELECT id,username,role FROM users WHERE username = ?");
-            $sth->bindParam(1,$username);
-        } elseif (is_numeric($username)) {
-            $sth = $this->db->prepare("SELECT id,username,role FROM users WHERE id = ?");
-            $sth->bindParam(1,$username);
-        } else {
-            $sth = $this->db->prepare("SELECT id,username,role FROM users");
+        if ($key && !is_numeric($key))
+        {
+            $result = $this->select('users',['username' => $key]);
         }
-        $sth->execute();
-        return $sth->fetchAll(PDO::FETCH_ASSOC);
+        elseif (is_numeric($key))
+        {
+            $result = $this->select('users',['id' => $key]);
+        }
+        else
+        {
+            $result = $this->db->select('users');
+        }
+
+        return $result;
     }
 
     public function create()
@@ -26,15 +29,13 @@ class User_Model extends Model
         $password = Password::make($_POST['password']);
         $role = $_POST['role'];
 
-        if (!count($this->fetchUsers($username))) {
+        if (!count($this->db->select('users',['username'=>$username]))) {
             if (!empty($username) && !empty($_POST['password']) && !empty($role)) {
-
-                $sth = $this->db->prepare("INSERT INTO users (username, password, role) VALUES(?,?,?)");
-                $sth->bindParam(1,$username);
-                $sth->bindParam(2,$password);
-                $sth->bindParam(3,$role);
-                $sth->execute();
-
+                $this->db->insert('users', [
+                    'username' => $username,
+                    'password'=>$password,
+                    'role'=>$role
+                ]);
             }
         }
 
@@ -44,13 +45,13 @@ class User_Model extends Model
 
     public function edit($id)
     {
-        $users = $this->fetchUsers($id);
+        $users = $this->db->select('users',['id' =>$id]);
         return $users[0];
     }
+
     public function update($id)
     {
-        $users = $this->fetchUsers($id);
-
+        $users = $this->db->select('users',['id' =>$id]);
         $username = $_POST['username'];
         $password = Password::make($_POST['password']);
         $role = $_POST['role'];
@@ -58,20 +59,16 @@ class User_Model extends Model
         if ($users[0]['role'] != 'owner') {
             if (!empty($username) && !empty($role)) {
 
-                $stmt = "UPDATE users SET username = ?, role = ? ";
-                if (!empty($_POST['password'])) {
-                    $stmt .= ",password = ? ";
-                }
-                $stmt .= "WHERE id = '$id'";
-
-                $sth = $this->db->prepare($stmt);
-                $sth->bindParam(1,$username);
-                $sth->bindParam(2,$role);
+                $values = [
+                    'username' => $username,
+                    'role' => $role,
+                ];
 
                 if (!empty($_POST['password'])) {
-                    $sth->bindParam(3,$password);
+                    $values['password'] = $password;
                 }
-                $sth->execute();
+
+                $this->db->update('users',$values,$id);
             }
         }
 
@@ -80,16 +77,12 @@ class User_Model extends Model
 
     public function destroy($id)
     {
-        $users = $this->fetchUsers($id);
+        $users = $this->db->select('users',['id'=>$id]);
         if (count($users)) {
             if ($users[0][role] != 'owner') {
-                $sth = $this->db->prepare("DELETE FROM users WHERE id = ?");
-                $sth->bindParam(1, $id);
-                $sth->execute();
+                $this->db->delete('users', ['id' => $id]);
             }
         }
         header("Location: ". Route::link('user/list'));
-
     }
-
 }
